@@ -1,95 +1,290 @@
 #include "ntuplereader/nTupleReader.h"
+#include <cstddef>
 
 // TODO: catch exceptions & return an error type
 
 extern "C" {
 #include "cnTupleReader.h"
 
-nTupleReader *ntuple_reader_new() { return new nTupleReader; }
+nTupleReader *ntuple_reader_new() {
+  try {
+    return new nTupleReader;
+  } catch(...) {
+    return nullptr;
+  }
+}
 nTupleReader *ntuple_reader_from_tree(char const *treeName) {
-  return new nTupleReader(treeName);
+  try {
+    return new nTupleReader(treeName);
+  } catch(...) {
+    return nullptr;
+  }
 }
 
-bool next_entry(nTupleReader *r) { return r->nextEntry(); }
-
-void set_pdf(nTupleReader *r, char const *name) { return r->setPDF(name); }
-
-void set_pdf_member(nTupleReader *r, int member) {
-  return r->setPDFmember(member);
-}
-int get_id(nTupleReader *r) { return r->getID(); }
-int get_particle_number(nTupleReader *r) { return r->getParticleNumber(); }
-double get_energy(nTupleReader *r, int i) { return r->getEnergy(i); };
-double get_x(nTupleReader *r, int i) { return r->getX(i); }
-
-double get_y(nTupleReader *r, int i) { return r->getY(i); }
-
-double get_z(nTupleReader *r, int i) { return r->getZ(i); }
-
-int get_pdg_code(nTupleReader *r, int i) { return r->getPDGcode(i); }
-
-double get_x1(nTupleReader *r) { return r->getX1(); }
-
-double get_x2(nTupleReader *r) { return r->getX2(); }
-
-double get_id1(nTupleReader *r) { return r->getId1(); }
-
-double get_id2(nTupleReader *r) { return r->getId2(); }
-
-short get_alphas_power(nTupleReader *r) { return r->getAlphasPower(); }
-
-double get_renormalization_scale(nTupleReader *r) {
-  return r->getRenormalizationScale();
+BoolResult next_entry(nTupleReader *r) {
+  try {
+    return { .res = r->nextEntry(), .status = OK};
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
 }
 
-double get_factorization_scale(nTupleReader *r) {
-  return r->getFactorizationScale();
+VoidResult set_pdf(nTupleReader *r, char const *name) {
+  try {
+    r->setPDF(name);
+    return { .status = OK };
+  } catch(...) {
+    return { .status = ERR };
+  }
 }
 
-double get_weight(nTupleReader *r) { return r->getWeight(); }
+VoidResult set_pdf_member(nTupleReader *r, int member) {
+  try {
+    r->setPDFmember(member);
+    return { .status = OK };
+  } catch(...) {
+    return { .status = ERR };
+  }
+}
+IntResult get_id(nTupleReader *r) {
+  try {
+    return { .res = r->getID(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+IntResult get_particle_number(nTupleReader *r) {
+  try {
+    return { .res = r->getParticleNumber(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+DoubleResult get_energy(nTupleReader *r, int i) {
+  try {
+    return { .res = r->getEnergy(i), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+};
+DoubleResult get_x(nTupleReader *r, int i) {
+  try {
+    return { .res = r->getX(i), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
 
-double get_weight2(nTupleReader *r) { return r->getWeight2(); }
+DoubleResult get_y(nTupleReader *r, int i) {
+  try {
+    return { .res = r->getY(i), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
 
-double get_me_weight(nTupleReader *r) { return r->getMEWeight(); }
+DoubleResult get_z(nTupleReader *r, int i) {
+  try {
+    return { .res = r->getZ(i), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
 
-double get_me_weight2(nTupleReader *r) { return r->getMEWeight2(); }
+IntResult get_pdg_code(nTupleReader *r, int i) {
+  try {
+    return { .res = r->getPDGcode(i), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
 
-char get_type(nTupleReader *r) { return r->getType(); }
+DoubleResult get_x1(nTupleReader *r) {
+  try {
+    return { .res = r->getX1(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
 
-double compute_weight(
+DoubleResult get_x2(nTupleReader *r) {
+  try {
+    return { .res = r->getX2(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+DoubleResult get_id1(nTupleReader *r) {
+  try {
+    return { .res = r->getId1(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+DoubleResult get_id2(nTupleReader *r) {
+  try {
+    return { .res = r->getId2(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+ShortResult get_alphas_power(nTupleReader *r) {
+  try {
+    return { .res = r->getAlphasPower(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+DoubleResult get_renormalization_scale(nTupleReader *r) {
+  try {
+    return { .res = r->getRenormalizationScale(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+DoubleResult get_factorization_scale(nTupleReader *r) {
+  try {
+    return { .res = r->getFactorizationScale(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+DoubleResult get_weight(nTupleReader *r) {
+  try {
+    return { .res = r->getWeight(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+DoubleResult get_weight2(nTupleReader *r) {
+  try {
+    return { .res = r->getWeight2(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+DoubleResult get_me_weight(nTupleReader *r) {
+  try {
+    return { .res = r->getMEWeight(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+DoubleResult get_me_weight2(nTupleReader *r) {
+  try {
+    return { .res = r->getMEWeight2(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+CharResult get_type(nTupleReader *r) {
+  try {
+    return { .res = r->getType(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+
+DoubleResult compute_weight(
   nTupleReader *r, double newFactorizationScale,
   double newRenormalizationScale
 ) {
-  return r->computeWeight(newFactorizationScale, newRenormalizationScale);
+  try {
+    return { .res = r->computeWeight(newFactorizationScale, newRenormalizationScale), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
 }
 
-double compute_weight2(
+DoubleResult compute_weight2(
   nTupleReader *r, double newFactorizationScale,
   double newRenormalizationScale
 ) {
-  return r->computeWeight2(newFactorizationScale, newRenormalizationScale);
+  try {
+    return { .res = r->computeWeight2(newFactorizationScale, newRenormalizationScale), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
 }
 
-void set_pp(nTupleReader *r) { return r->setPP(); }
-
-void set_ppbar(nTupleReader *r) { return r->setPPbar(); }
-
-
-void drop_ntuple_reader(nTupleReader *r) { delete r; }
-
-void add_file(nTupleReader *r, char const *filename) {
-  return r->addFile(filename);
+VoidResult set_pp(nTupleReader *r) {
+  try {
+    r->setPP();
+    return { .status = OK };
+  } catch(...) {
+    return { .status = ERR };
+  }
 }
 
-// void set_cms_energy(nTupleReader *r, double CMS_energy) {
-//   return r->setCMSEnergy(CMS_energy);
+VoidResult set_ppbar(nTupleReader *r) {
+  try {
+    r->setPPbar();
+    return { .status = OK };
+  } catch(...) {
+    return { .status = ERR };
+  }
+}
+
+
+void drop_ntuple_reader(nTupleReader *r) {
+  delete r;
+}
+
+VoidResult add_file(nTupleReader *r, char const *filename) {
+  try {
+    r->addFile(filename);
+    return { .status = OK };
+  } catch(...) {
+    return { .status = ERR };
+  }
+}
+
+// VoidResult set_cms_energy(nTupleReader *r, double CMS_energy) {
+//   try {
+//     r->setCMSEnergy(CMS_energy);
+//     return {  .status = OK };
+//   } catch(...) {
+//     return { .res = {}, .status = ERR };
+//   }
 // }
-// void set_collider_type(nTupleReader *r, ColliderType ct) {
-//   return r->setColliderType(static_cast<colliderType>(ct));
+// VoidResult set_collider_type(nTupleReader *r, ColliderType ct) {
+//   try {
+//     r->setColliderType(static_cast<colliderType>(ct));
+//     return { .status = OK };
+//   } catch(...) {
+//     return { .res = {}, .status = ERR };
+//   }
 // }
-void reset_cross_section(nTupleReader *r) { return r->resetCrossSection(); }
-double get_cross_section(nTupleReader *r) { return r->getCrossSection(); }
-double get_cross_section_error(nTupleReader *r) {
-  return r->getCrossSectionError();
+VoidResult reset_cross_section(nTupleReader *r) {
+  try {
+    r->resetCrossSection();
+    return { .status = OK };
+  } catch(...) {
+    return { .status = ERR };
+  }
+}
+DoubleResult get_cross_section(nTupleReader *r) {
+  try {
+    return { .res = r->getCrossSection(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
+}
+DoubleResult get_cross_section_error(nTupleReader *r) {
+  try {
+    return { .res = r->getCrossSectionError(), .status = OK };
+  } catch(...) {
+    return { .res = {}, .status = ERR };
+  }
 }
 }

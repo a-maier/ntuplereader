@@ -1,3 +1,4 @@
+use std::os::raw::{c_char, c_short, c_int};
 use std::{ffi::CString, path::Path};
 use std::os::unix::ffi::OsStrExt;
 
@@ -8,9 +9,38 @@ pub struct NTupleReader (
 
 impl Default for NTupleReader {
     fn default() -> Self {
-        Self(unsafe { ntuple_reader_new() } )
+        let res = unsafe { ntuple_reader_new() };
+        assert!(!res.is_null());
+        Self( res )
     }
 }
+
+impl From<VoidResult> for () {
+    fn from(res: VoidResult) -> Self {
+        if res.status != Status::OK {
+            panic!("Exception in nTupleReader");
+        }
+    }
+}
+
+macro_rules! from_res {
+    ( $from:ty, $to: ty ) => {
+        impl From<$from> for $to {
+            fn from(res: $from) -> $to {
+                if res.status != Status::OK {
+                    panic!("Exception in nTupleReader");
+                }
+                res.res
+            }
+        }
+    }
+}
+
+from_res!(BoolResult, bool);
+from_res!(CharResult, c_char);
+from_res!(ShortResult, c_short);
+from_res!(IntResult, c_int);
+from_res!(DoubleResult, f64);
 
 impl NTupleReader {
     pub fn new() -> Self {
@@ -23,16 +53,16 @@ impl NTupleReader {
     }
 
     pub fn next_entry(&mut self) -> bool {
-        unsafe { next_entry(self.0) }
+        unsafe { next_entry(self.0) }.into()
     }
 
     pub fn set_pdf<T: AsRef<str>>(&mut self, name: T) {
         let name = CString::new(name.as_ref()).unwrap();
-        unsafe { set_pdf(self.0, name.as_ptr()) }
+        unsafe { set_pdf(self.0, name.as_ptr()) }.into()
     }
 
     pub fn set_pdf_member(&mut self, member: i32) {
-        unsafe { set_pdf_member(self.0, member.into()) }
+        unsafe { set_pdf_member(self.0, member.into()) }.into()
     }
 
     pub fn get_id(&mut self) -> i32 {
@@ -44,71 +74,71 @@ impl NTupleReader {
     }
 
     pub fn get_energy(&mut self, i: i32) -> f64 {
-        unsafe { get_energy(self.0, i.into()) }
+        unsafe { get_energy(self.0, i.into()) }.into()
     }
 
     pub fn get_x(&mut self, i: i32) -> f64 {
-        unsafe { get_x(self.0, i.into()) }
+        unsafe { get_x(self.0, i.into()) }.into()
     }
 
     pub fn get_y(&mut self, i: i32) -> f64 {
-        unsafe { get_y(self.0, i.into()) }
+        unsafe { get_y(self.0, i.into()) }.into()
     }
 
     pub fn get_z(&mut self, i: i32) -> f64 {
-        unsafe { get_z(self.0, i.into()) }
+        unsafe { get_z(self.0, i.into()) }.into()
     }
 
     pub fn get_pdg_code(&mut self, i: i32) -> i32 {
-        unsafe { get_pdg_code(self.0, i.into()) }
+        unsafe { get_pdg_code(self.0, i.into()) }.into()
     }
 
     pub fn get_x1(&mut self) -> f64 {
-        unsafe { get_x1(self.0) }
+        unsafe { get_x1(self.0) }.into()
     }
 
     pub fn get_x2(&mut self) -> f64 {
-        unsafe { get_x2(self.0) }
+        unsafe { get_x2(self.0) }.into()
     }
 
     pub fn get_id1(&mut self) -> f64 {
-        unsafe { get_id1(self.0) }
+        unsafe { get_id1(self.0) }.into()
     }
 
     pub fn get_id2(&mut self) -> f64 {
-        unsafe { get_id2(self.0) }
+        unsafe { get_id2(self.0) }.into()
     }
 
     pub fn get_alphas_power(&mut self) -> i16 {
-        unsafe { get_alphas_power(self.0).into() }
+        unsafe { get_alphas_power(self.0) }.into()
     }
 
     pub fn get_renormalization_scale(&mut self) -> f64 {
-        unsafe { get_renormalization_scale(self.0) }
+        unsafe { get_renormalization_scale(self.0) }.into()
     }
 
     pub fn get_factorization_scale(&mut self) -> f64 {
-        unsafe { get_factorization_scale(self.0) }
+        unsafe { get_factorization_scale(self.0) }.into()
     }
 
     pub fn get_weight(&mut self) -> f64 {
-        unsafe { get_weight(self.0) }
+        unsafe { get_weight(self.0) }.into()
     }
 
     pub fn get_weight2(&mut self) -> f64 {
-        unsafe { get_weight2(self.0) }
+        unsafe { get_weight2(self.0) }.into()
     }
 
     pub fn get_me_weight(&mut self) -> f64 {
-        unsafe { get_me_weight(self.0) }
+        unsafe { get_me_weight(self.0) }.into()
     }
 
     pub fn get_me_weight2(&mut self) -> f64 {
-        unsafe { get_me_weight2(self.0) }
+        unsafe { get_me_weight2(self.0) }.into()
     }
 
     pub fn get_type(&mut self) -> i8 {
-        unsafe { get_type(self.0).into() }
+        unsafe { get_type(self.0) }.into()
     }
 
     pub fn compute_weight(
@@ -116,7 +146,7 @@ impl NTupleReader {
         new_factorization_scale: f64,
         new_renormalization_scale: f64,
     ) -> f64 {
-        unsafe { compute_weight(self.0, new_factorization_scale, new_renormalization_scale) }
+        unsafe { compute_weight(self.0, new_factorization_scale, new_renormalization_scale) }.into()
     }
 
     pub fn compute_weight2(
@@ -124,48 +154,48 @@ impl NTupleReader {
         new_factorization_scale: f64,
         new_renormalization_scale: f64,
     ) -> f64 {
-        unsafe { compute_weight2(self.0, new_factorization_scale, new_renormalization_scale) }
+        unsafe { compute_weight2(self.0, new_factorization_scale, new_renormalization_scale) }.into()
     }
 
     pub fn set_pp(&mut self) {
-        unsafe { set_pp(self.0) }
+        unsafe { set_pp(self.0) }.into()
     }
 
     pub fn set_ppbar(&mut self) {
-        unsafe { set_pp(self.0) }
+        unsafe { set_pp(self.0) }.into()
     }
 
     pub fn add_file<T: AsRef<Path>>(&mut self, name: T) {
         let name = CString::new(name.as_ref().as_os_str().as_bytes()).unwrap();
         unsafe {
             add_file(self.0, name.as_ptr())
-        }
+        }.into()
     }
 
     // pub fn set_cms_energy(&mut self, cms_energy: f64) {
-    //     unsafe { set_cms_energy(self.0, cms_energy) }
+    //     unsafe { set_cms_energy(self.0, cms_energy) }.into()
     // }
 
     // pub fn set_collider_type(&mut self, ct: ColliderType) {
-    //     unsafe { set_collider_type(self.0, ct) }
+    //     unsafe { set_collider_type(self.0, ct) }.into()
     // }
 
     pub fn reset_cross_section(&mut self) {
-        unsafe { reset_cross_section(self.0) }
+        unsafe { reset_cross_section(self.0) }.into()
     }
 
     pub fn get_cross_section(&mut self) -> f64 {
-        unsafe { get_cross_section(self.0) }
+        unsafe { get_cross_section(self.0) }.into()
     }
 
     pub fn get_cross_section_error(&mut self) -> f64 {
-        unsafe { get_cross_section_error(self.0) }
+        unsafe { get_cross_section_error(self.0) }.into()
     }
 }
 
 impl Drop for NTupleReader {
     fn drop(&mut self) {
-        unsafe { drop_ntuple_reader(self.0) }
+        unsafe { drop_ntuple_reader(self.0) }.into()
     }
 }
 

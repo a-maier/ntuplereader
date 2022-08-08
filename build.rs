@@ -13,6 +13,7 @@ fn compile_ntuple_reader() -> Result<()> {
         .blocklist_item("false_")
         .blocklist_item("__bool_true_false_are_defined")
         .newtype_enum("ColliderType")
+        .newtype_enum("Status")
         .generate()
         .expect("Failed to generate ntuple reader bindings");
 
