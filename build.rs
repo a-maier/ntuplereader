@@ -1,4 +1,5 @@
-use std::{path::PathBuf, env};
+use std::io::Write;
+use std::{path::PathBuf, env, fs::File};
 use anyhow::Result;
 
 fn main() -> Result<()> {
@@ -35,6 +36,7 @@ fn compile_ntuple_reader() -> Result<()> {
 
     cc_cmd.compile("cntuplereader");
 
+    let mut flags = Vec::new();
     let linker_flags = get_ntuplereader_flags("--rpath")?.into_iter().chain(
         get_ntuplereader_flags("--ldflags")?.into_iter()
     ).chain(
@@ -42,7 +44,16 @@ fn compile_ntuple_reader() -> Result<()> {
     );
     for flag in linker_flags {
         println!("cargo:rustc-link-arg={flag}");
+        flags.push(format!(r#"r"{}""#, flag));
     }
+    let mut flag_out = File::create(out_path.join("flags.rs"))?;
+
+    writeln!(
+        flag_out,
+        "pub const LINKER_FLAGS: [&str; {}] = [{}];",
+        flags.len(),
+        flags.join(", ")
+    )?;
     Ok(())
 }
 
